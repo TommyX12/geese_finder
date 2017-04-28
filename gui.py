@@ -8,12 +8,16 @@ class GUI:
     
     def run(self):
         root = tkinter.Tk();
-        root.geometry('1024x640')
+        canvas = tkinter.Canvas(root, width = 1024, height = 640)
+        canvas.pack()
         
         #Load First image automatically
         path = "image1.jpg"
-        img = ImageTk.PhotoImage(Image.open(path))
+        img = Image.open(path)
+        tk_img = ImageTk.PhotoImage(img)
+        canvas.create_image(0, 0, image=tk_img)
         #Add hotkeys for labelling, undoing, next and previous
         #Re-render after all commands
+        root.mainloop()
         pass
         
