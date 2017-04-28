@@ -1,9 +1,9 @@
 from backend import *
 
 class GUI:
-    def __init__(backendObject):
+    def __init__(self, backendObject):
         self.backend = backendObject
         pass
     
-    def run():
+    def run(self):
         pass
