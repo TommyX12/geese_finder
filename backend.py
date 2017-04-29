@@ -12,13 +12,14 @@ class Goose:
             'y':             self.y,
             'type':          self.type,
             'id':            image_object.id,
-            #  'cam-yaw':       image_object.yaw,
-            #  'cam-pitch':     image_object.pitch,
-            #  'cam-roll':      image_object.roll,
-            #  'cam-altitude':  image_object.altitude,
+            'cam-yaw':       image_object.yaw,
+            'cam-pitch':     image_object.pitch,
+            'cam-roll':      image_object.roll,
+            'cam-altitude':  image_object.altitude,
             'image-name':    image_object.path,
             'cam-longitude': image_object.longitude,
             'cam-latitude':  image_object.latitude,
+            'cam-heading':   image_object.heading,
         }
     
     def from_data(data):
@@ -39,6 +40,7 @@ class ImageObject:
             altitude  = 0,
             longitude = 0,
             latitude  = 0,
+            heading   = 0,
             ):
         self.id        = id
         self.geese     = geese
@@ -49,6 +51,7 @@ class ImageObject:
         self.altitude  = altitude
         self.longitude = longitude
         self.latitude  = latitude
+        self.heading   = heading
     
     def add_goose(self, x, y, type):
         self.geese.append(Goose(x, y, type))
@@ -95,6 +98,7 @@ class Backend:
         ids = []
         for path in image_paths:
             id = image_path_to_id(path)
+            gpd_data_entry = gps_data[id - 1]
             image_object = ImageObject(
                 id,
                 geese[id] if id in geese else [],
@@ -103,8 +107,9 @@ class Backend:
                 pitch     = 0,
                 roll      = 0,
                 altitude  = 0,
-                longitude = gps_data[id - 1]['position_long_value'],
-                latitude  = gps_data[id - 1]['position_lat_value'],
+                longitude = gpd_data_entry['position_long_value'],
+                latitude  = gpd_data_entry['position_lat_value'],
+                heading   = gpd_data_entry['heading_value'],
             )
             
             ids.append(id)
