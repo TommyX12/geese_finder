@@ -70,4 +70,4 @@ def dicts_to_csv(dicts):
 MAX_SEMICIRCLES = 2**31
 
 def semicircles_to_degrees(semicircles):
-    return semicircles * (180.0 / float(MAX_SEMICIRCLES))
+    return semicircles * (180.0 / MAX_SEMICIRCLES)

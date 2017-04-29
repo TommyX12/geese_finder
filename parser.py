@@ -1,37 +1,14 @@
 import os, sys, codecs
 import datetime
 
+from util import *
+
+
+GPS_DATA_FILENAME = 'gps_data.csv'
+GPS_DATA_RAW_FILENAME = 'out.csv'
 
 def utc_timestamp_to_string(timestamp):
     return str(datetime.datetime.fromtimestamp(int(timestamp)).strftime('%H:%M:%S'))
-
-def read_file(path):
-    with open(path, encoding='utf-8-sig') as f:
-        content = f.read()
-    
-    return content
-
-def csv_to_arrays(data):
-    content = data.splitlines()
-
-    for i in range(len(content)):
-        content[i] = content[i].split(',')
-
-    return content
-
-def csv_to_dicts(data):
-    array = csv_to_arrays(data)
-    keys = array[0]
-    
-    content = [{} for i in range(len(array) - 1)]
-    for i in range(len(array) - 1):
-        for j in range(len(keys)):
-            if j >= len(array[i + 1]):
-                break
-            
-            content[i][keys[j]] = array[i + 1][j]
-    
-    return content
 
 def avg_fields_dict(dicts, i, j):
     data_avg = {}
@@ -64,7 +41,7 @@ def avg_fields_dict(dicts, i, j):
         
 
 print('reading file...')
-dicts = csv_to_dicts(read_file('out.csv'))
+dicts = csv_to_dicts(read_file(GPS_DATA_RAW_FILENAME))
 
 print('extracting parameters...')
 for i in range(len(dicts)):
@@ -173,10 +150,6 @@ for fields in gps_data_avg:
     
     processed.append(out)
     
-GPS_DATA_FILENAME = 'gps_data.csv'
-
-file = open(GPS_DATA_FILENAME, 'w')
-file.write('\n'.join([','.join(i) for i in processed]))
-file.close()
+write_file(GPS_DATA_FILENAME, '\n'.join([','.join(i) for i in processed]))
 
 print('done.')

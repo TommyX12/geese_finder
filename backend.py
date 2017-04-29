@@ -17,6 +17,7 @@ class Goose:
             'cam-roll':      image_object.roll,
             'cam-altitude':  image_object.altitude,
             'image-name':    image_object.path,
+            'image-time':    image_object.time,
             'cam-longitude': image_object.longitude,
             'cam-latitude':  image_object.latitude,
             'cam-heading':   image_object.heading,
@@ -41,6 +42,7 @@ class ImageObject:
             longitude = 0,
             latitude  = 0,
             heading   = 0,
+            time      = 0,
             ):
         self.id        = id
         self.geese     = geese
@@ -52,6 +54,7 @@ class ImageObject:
         self.longitude = longitude
         self.latitude  = latitude
         self.heading   = heading
+        self.time      = time
     
     def add_goose(self, x, y, type):
         self.geese.append(Goose(x, y, type))
@@ -64,9 +67,9 @@ class ImageObject:
         return self.geese
 
 GPS_DATA_FILENAME = 'gps_data.csv'
-GEESE_RAW_FILENAME = 'geese_raw.csv'
-NESTS_RAW_FILENAME = 'nests_raw.csv'
-COUNTS_FILENAME = 'counts.csv'
+GEESE_RAW_FILENAME = 'output/geese_raw.csv'
+NESTS_RAW_FILENAME = 'output/nests_raw.csv'
+COUNTS_FILENAME = 'output/counts.csv'
 
 _count = 0
 def image_path_to_id(path):
@@ -98,7 +101,7 @@ class Backend:
         ids = []
         for path in image_paths:
             id = image_path_to_id(path)
-            gpd_data_entry = gps_data[id - 1]
+            gps_data_entry = gps_data[id - 1]
             image_object = ImageObject(
                 id,
                 geese[id] if id in geese else [],
@@ -107,9 +110,10 @@ class Backend:
                 pitch     = 0,
                 roll      = 0,
                 altitude  = 0,
-                longitude = semicircles_to_degrees(float(gpd_data_entry['position_long_value'])),
-                latitude  = semicircles_to_degrees(float(gpd_data_entry['position_lat_value'])),
-                heading   = gpd_data_entry['heading_value'],
+                longitude = semicircles_to_degrees(float(gps_data_entry['position_long_value'])),
+                latitude  = semicircles_to_degrees(float(gps_data_entry['position_lat_value'])),
+                heading   = gps_data_entry['heading_value'],
+                time      = gps_data_entry['readable_time_value'],
             )
             
             ids.append(id)
