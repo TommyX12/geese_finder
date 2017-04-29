@@ -1,4 +1,16 @@
+import math
 from util import *
+
+
+"""
+
+TODOs:
+- display image name and other stats on bottom of screen
+- allow indicator of previously marked geese somehow
+- allow zooming of image at point
+- test GPS and lens correction
+
+"""
 
 class Goose:
     def __init__(self, x, y, type):
@@ -7,6 +19,7 @@ class Goose:
         self.type = type
     
     def get_data(self, image_object):
+        corrected = correct_point(self.x, self.y, image_object.latitude, image_object.longitude, image_object.heading)
         return {
             'x':             self.x,
             'y':             self.y,
@@ -21,6 +34,8 @@ class Goose:
             'cam-longitude': image_object.longitude,
             'cam-latitude':  image_object.latitude,
             'cam-heading':   image_object.heading,
+            'corrected-x':   corrected[0],
+            'corrected-y':   corrected[1],
         }
     
     def from_data(data):
@@ -71,6 +86,19 @@ GEESE_RAW_FILENAME = 'output/geese_raw.csv'
 NESTS_RAW_FILENAME = 'output/nests_raw.csv'
 COUNTS_FILENAME = 'output/counts.csv'
 
+# latex = string('\n');
+
+def correct_point(x, y, lat, lon, heading):
+    r = math.sqrt((x - 0.5)**2 + (y - 0.5)**2)
+    x = (x-0.5)*(1+1.0*(r**2))/0.5 * 83 / 1000000
+    y = (y-0.5)*(1+1.0*(r**2))/0.5 * 83 / 1000000
+    
+    xu = lat - x * math.sin(heading) + y * math.cos(heading)
+    yu = lon + y * math.sin(heading) + x * math.cos(heading)
+    # latex += string(i)) + string('&')+ string(loc(i, 1)) + string('&') + string(loc(i, 2)) + string('\\')
+    return (xu, yu)
+
+                                
 _count = 0
 def image_path_to_id(path):
     #  global _count
@@ -112,7 +140,7 @@ class Backend:
                 altitude  = 0,
                 longitude = semicircles_to_degrees(float(gps_data_entry['position_long_value'])),
                 latitude  = semicircles_to_degrees(float(gps_data_entry['position_lat_value'])),
-                heading   = gps_data_entry['heading_value'],
+                heading   = float(gps_data_entry['heading_value']),
                 time      = gps_data_entry['readable_time_value'],
             )
             
@@ -160,6 +188,6 @@ class Backend:
 if __name__ == '__main__':
     backend = Backend()
     backend.load()
-    image_object = backend.get_image_object_by_id(1)
-    #  image_object.add_goose(0.5, 0.5, 'bad goose')
+    # image_object = backend.get_image_object_by_id(1)
+    # image_object.add_goose(0.5, 0.5, 'bad goose')
     backend.save()
