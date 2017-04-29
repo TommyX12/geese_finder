@@ -135,7 +135,7 @@ class Backend:
         
         counts = [{
             'total-geese': total_geese,
-            'total_types': len(total_types),
+            'total-types': len(total_types),
         }]
         
         write_file(GEESE_RAW_FILENAME, dicts_to_csv(dicts))
@@ -146,5 +146,5 @@ if __name__ == '__main__':
     backend = Backend()
     backend.load()
     image_object = backend.get_image_object_by_id(1)
-    image_object.add_goose(0.5, 0.5, 'bad goose')
+    #  image_object.add_goose(0.5, 0.5, 'bad goose')
     backend.save()
