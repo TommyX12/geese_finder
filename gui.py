@@ -26,8 +26,8 @@ class GUI:
     def __init__(self, backendObject):
         GUI.current = self
         
-        self.width         = 1280
-        self.height        = 720
+        self.width         = 1440
+        self.height        = 1080
         
         self.backend       = backendObject
         self.image_objects = self.backend.get_image_objects()
