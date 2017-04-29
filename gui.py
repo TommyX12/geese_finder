@@ -64,7 +64,6 @@ class GUI:
         elif char == '`':
             GUI.current.mark_goose(GUI.mouse_x, GUI.mouse_y, 'nest')
         
-    
     def prev_image(self):
         if self.index > 0:
             self.index -= 1
@@ -91,25 +90,15 @@ class GUI:
     
     def load_image_file(path):
         GUI.img = ImageTk.PhotoImage(Image.open(path).resize((GUI.current.width, GUI.current.height)))
+        #  img = PhotoImage(file=path)
     
     def redraw(self):
         self.canvas.delete("all")
-        #  path = 'image1.jpg'
         path = self.image_objects[self.index].path
-        #  img = PhotoImage(file=path)
         GUI.load_image_file(path)
         self.canvas.create_image(0, 0, anchor='nw', image=GUI.img)
         for goose in self.image_objects[self.index].geese:
             self.draw_goose(goose.x, goose.y, goose.type)
-            
-        #  self.canvas.create_rectangle(65, 35, 135, 65, fill="yellow")
-        
-        #  img = PhotoImage(width=self.width, height=self.height)
-        #  self.canvas.create_image(self.width/2, self.height/2, image=img, state="normal")
-
-        #  for x in range(4 * self.width):
-            #  y = int(self.height/2 + self.height/4 * math.sin(x/80.0))
-            #  img.put("#ffffff", (x//4,y))
     
     def draw_goose(self, x, y, type):
         x *= self.width
