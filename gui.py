@@ -20,21 +20,21 @@ class GUI:
         '8':    {'color': '#88ff00', 'r': 5},
         '9':    {'color': '#8800ff', 'r': 5},
         '0':    {'color': '#0088ff', 'r': 5},
-        'nest': {'color': '#4488ff', 'r': 10},
+        'nest': {'color': '#4488ff', 'r': 7},
     }
 
     def __init__(self, backendObject):
         GUI.current = self
         
-        self.width = 1024
-        self.height = 640
+        self.width         = 1280
+        self.height        = 720
         
-        self.backend = backendObject
+        self.backend       = backendObject
         self.image_objects = self.backend.get_image_objects()
-        self.index = 0
+        self.index         = 0
         
-        self.root = tkinter.Tk();
-        self.canvas = tkinter.Canvas(self.root, width = self.width, height = self.height)
+        self.root          = tkinter.Tk();
+        self.canvas        = tkinter.Canvas(self.root, width = self.width, height = self.height)
         self.canvas.pack()
         self.root.configure(background='grey')
         
@@ -111,15 +111,13 @@ class GUI:
             #  y = int(self.height/2 + self.height/4 * math.sin(x/80.0))
             #  img.put("#ffffff", (x//4,y))
     
-    def draw_goose(self, x, y, type=''):
+    def draw_goose(self, x, y, type):
         x *= self.width
         y *= self.height
         r = GUI.type_style[type]['r']
         self.canvas.create_oval(x - r, y - r, x + r, y + r, fill = GUI.type_style[type]['color'], outline = '#ff0000')
     
     def run(self):
-        #Add hotkeys for labelling, undoing, next and previous
-        #Re-render after all commands
         self.redraw()
         self.root.mainloop()
         
