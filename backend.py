@@ -92,6 +92,7 @@ class Backend:
                 
             geese[id].append(Goose.from_data(goose_raw))
         
+        ids = []
         for path in image_paths:
             id = image_path_to_id(path)
             image_object = ImageObject(
@@ -106,8 +107,13 @@ class Backend:
                 latitude  = gps_data[id - 1]['position_lat_value'],
             )
             
-            self.image_objects_list.append(image_object)
+            ids.append(id)
             self.image_objects_dict[id] = image_object
+        
+        ids.sort()
+        
+        for id in ids:
+            self.image_objects_list.append(self.image_objects_dict[id])
             
         print('back end loaded.')
     
