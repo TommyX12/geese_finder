@@ -3,7 +3,7 @@ import datetime
 
 
 def utc_timestamp_to_string(timestamp):
-    return str(datetime.datetime.utcfromtimestamp(int(timestamp)))
+    return str(datetime.datetime.fromtimestamp(int(timestamp)).strftime('%H:%M:%S'))
 
 def read_file(path):
     with open(path, encoding='utf-8-sig') as f:
