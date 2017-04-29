@@ -107,8 +107,8 @@ class Backend:
                 pitch     = 0,
                 roll      = 0,
                 altitude  = 0,
-                longitude = gpd_data_entry['position_long_value'],
-                latitude  = gpd_data_entry['position_lat_value'],
+                longitude = semicircles_to_degrees(float(gpd_data_entry['position_long_value'])),
+                latitude  = semicircles_to_degrees(float(gpd_data_entry['position_lat_value'])),
                 heading   = gpd_data_entry['heading_value'],
             )
             

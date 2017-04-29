@@ -67,3 +67,7 @@ def dicts_to_csv(dicts):
     
     return '\n'.join([','.join(i) for i in processed])
 
+MAX_SEMICIRCLES = 2**31
+
+def semicircles_to_degrees(semicircles):
+    return semicircles * (180.0 / float(MAX_SEMICIRCLES))
