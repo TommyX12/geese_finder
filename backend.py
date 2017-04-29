@@ -12,10 +12,11 @@ class Goose:
             'y':             self.y,
             'type':          self.type,
             'id':            image_object.id,
-            'cam-yaw':       image_object.yaw,
-            'cam-pitch':     image_object.pitch,
-            'cam-roll':      image_object.roll,
-            'cam-altitude':  image_object.altitude,
+            #  'cam-yaw':       image_object.yaw,
+            #  'cam-pitch':     image_object.pitch,
+            #  'cam-roll':      image_object.roll,
+            #  'cam-altitude':  image_object.altitude,
+            'image-name':    image_object.path,
             'cam-longitude': image_object.longitude,
             'cam-latitude':  image_object.latitude,
         }
@@ -61,12 +62,16 @@ class ImageObject:
 
 GPS_DATA_FILENAME = 'gps_data.csv'
 GEESE_RAW_FILENAME = 'geese_raw.csv'
+NESTS_RAW_FILENAME = 'nests_raw.csv'
+COUNTS_FILENAME = 'counts.csv'
 
 _count = 0
 def image_path_to_id(path):
-    global _count
-    _count += 1
-    return _count
+    #  global _count
+    #  _count += 1
+    #  return _count
+    
+    return int(path[path.rindex('img') + 3:path.rindex('.')])
 
 class Backend:
     def __init__(self):
@@ -97,8 +102,8 @@ class Backend:
                 pitch     = 0,
                 roll      = 0,
                 altitude  = 0,
-                longitude = 0,
-                latitude  = 0,
+                longitude = gps_data[id - 1]['position_long_value'],
+                latitude  = gps_data[id - 1]['position_lat_value'],
             )
             
             self.image_objects_list.append(image_object)
@@ -114,10 +119,28 @@ class Backend:
     
     def save(self):
         dicts = []
+        dicts_nests = []
+        total_geese = 0
+        total_types = {}
         for image_object in self.image_objects_list:
             dicts += [goose.get_data(image_object) for goose in image_object.get_geese()]
         
+        for goose in dicts:
+            if goose['type'] == 'nest':
+                dicts_nests.append(goose)
+            
+            else:
+                total_geese += 1
+                total_types[goose['type']] = 1
+        
+        counts = [{
+            'total-geese': total_geese,
+            'total_types': len(total_types),
+        }]
+        
         write_file(GEESE_RAW_FILENAME, dicts_to_csv(dicts))
+        write_file(NESTS_RAW_FILENAME, dicts_to_csv(dicts_nests))
+        write_file(COUNTS_FILENAME, dicts_to_csv(counts))
 
 if __name__ == '__main__':
     backend = Backend()
