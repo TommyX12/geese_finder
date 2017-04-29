@@ -53,7 +53,8 @@ class ImageObject:
         self.geese.append(Goose(x, y, type))
     
     def pop_goose(self):
-        self.geese.pop()
+        if len(self.geese) > 0:
+            self.geese.pop()
     
     def get_geese(self):
         return self.geese
@@ -91,7 +92,7 @@ class Backend:
             image_object = ImageObject(
                 id,
                 geese[id] if id in geese else [],
-                path      = '',
+                path      = path,
                 yaw       = 0,
                 pitch     = 0,
                 roll      = 0,
@@ -121,4 +122,6 @@ class Backend:
 if __name__ == '__main__':
     backend = Backend()
     backend.load()
+    image_object = backend.get_image_object_by_id(1)
+    image_object.add_goose(0.5, 0.5, 'bad goose')
     backend.save()

@@ -1,5 +1,9 @@
 import os, sys, codecs
+import datetime
 
+
+def utc_timestamp_to_string(timestamp):
+    return str(datetime.datetime.utcfromtimestamp(int(timestamp)))
 
 def read_file(path):
     with open(path, encoding='utf-8-sig') as f:
@@ -118,11 +122,21 @@ for i in range(len(gps_data)):
                     'value': id,
                     'units': '',
             }
+            avg1['readable_time'] = {
+                    #  'value': avg1['timestamp']['value'] * 2,
+                    'value': utc_timestamp_to_string(avg1['utc_timestamp']['value']),
+                    'units': '',
+            }
             id += 1
             avg2 = avg_fields_dict(gps_data, i - 4, i + 1)
             avg2['id'] = {
                     #  'value': avg2['timestamp']['value'] * 2 + 1,
                     'value': id,
+                    'units': '',
+            }
+            avg2['readable_time'] = {
+                    #  'value': avg1['timestamp']['value'] * 2,
+                    'value': utc_timestamp_to_string(avg2['utc_timestamp']['value']),
                     'units': '',
             }
             id += 1
