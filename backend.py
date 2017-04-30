@@ -42,7 +42,7 @@ class Goose:
             'latitude':   self.lat,
             'longitude':  self.lon,
             'type':       self.type,
-            'id':         image_object.id,
+            'image-id':   image_object.id,
             #  'cam-yaw':       image_object.yaw,
             #  'cam-pitch':     image_object.pitch,
             #  'cam-roll':      image_object.roll,
@@ -98,7 +98,9 @@ class ImageObject:
     
     def pop_goose(self):
         if len(self.geese) > 0:
-            self.geese.pop()
+            return self.geese.pop()
+
+        return None
     
     def get_geese(self):
         return self.geese
@@ -125,11 +127,28 @@ def correct_point(x, y, lat, lon, heading):
                                 
 _count = 0
 def image_path_to_id(path):
-    #  global _count
-    #  _count += 1
-    #  return _count
+    # global _count
+    # _count += 1
+    # return _count
+
+    # return int(path[path.rindex('img') + 3:path.rindex('.')])
+
+    result = 0
+    exp = 1
+    i = len(path) - 1
+    while i >= 0 and not path[i].isdigit():
+        i -= 1
+
+    if i < 0:
+        return 0
+
+    while i >= 0 and path[i].isdigit():
+        result += int(path[i]) * exp
+        i -= 1
+        exp *= 10
+
+    return result
     
-    return int(path[path.rindex('img') + 3:path.rindex('.')])
 
 class Backend:
     def __init__(self):
@@ -145,7 +164,7 @@ class Backend:
         
         geese_id = {}
         for goose_raw in geese_raw:
-            id = int(goose_raw['id'])
+            id = int(goose_raw['image-id'])
             if id not in geese_id:
                 geese_id[id] = []
                 

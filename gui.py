@@ -55,6 +55,16 @@ class GUI:
         self.root.bind('<Key>', GUI.on_key_down)
         self.root.bind('<Motion>', GUI.on_mouse_moved)
         self.root.protocol("WM_DELETE_WINDOW", GUI.on_closing)
+
+        self.count = 0
+        self.nests = 0
+        for image_object in self.image_objects:
+            for goose in image_object.get_geese():
+                if Goose.type_is_goose(goose.type):
+                    self.count += 1
+
+                elif goose.type == 'nest':
+                    self.nests += 1
         
         GUI.img_raw_map = Image.open(self.backend.get_map().path)
     
@@ -152,10 +162,26 @@ class GUI:
             gps = self.backend.map_to_gps(u)
             self.get_current_image(True).add_goose(self.goose_pos.x, self.goose_pos.y, gps.x, gps.y, self.goose_type)
             self.goose_pos = None
+
+            if Goose.type_is_goose(self.goose_type):
+                self.count += 1
+
+            elif self.goose_type == 'nest':
+                self.nests += 1
+
             self.switch_mode('photo')
     
     def pop_goose(self):
-        self.get_current_image().pop_goose()
+        goose = self.get_current_image().pop_goose()
+        if goose == None:
+            return 
+
+        if Goose.type_is_goose(goose.type):
+            self.count -= 1
+
+        elif goose.type == 'nest':
+            self.nests -= 1
+
         self.redraw()
     
     def on_mouse_moved(event):
@@ -192,23 +218,24 @@ class GUI:
     
     def get_text(self):
         cur = self.get_current_image()
-        count = str(len(cur.geese))
-        nests = 0
-        refs = 0
-        for goose in cur.geese:
-            if goose.type == 'nest':
-                nests += 1
-                
-            elif goose.type == 'ref':
-                refs += 1
+
+        tutorial = ''
+        if self.mode == 'photo':
+            tutorial = 'a/A: prev 1/5, d/D: next 1/5, 0-9: goose, `: nest, q: del, f: map, z: zoom out, x: zoom in'
+
+        else:
+            tutorial = 'f: back, z: zoom out, x: zoom in'
+            if self.goose_pos != None:
+                tutorial += ', c: confirm'
             
         texts = [
             str(self.index + 1) + '/' + str(len(self.image_objects)),
             cur.path,
-            'count: ' + str(len(cur.geese)),
-            'nests: ' + str(nests),
-            'refs: ' + str(refs),
+            '' if self.mode == 'map' else ('id: ' + str(self.get_current_image().id)),
+            'count: ' + str(self.count),
+            'nests: ' + str(self.nests),
             self.mode,
+            tutorial,
         ]
         return ' | '.join([str(i) for i in texts])
     
