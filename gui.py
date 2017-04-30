@@ -64,6 +64,7 @@ class GUI:
     def screen_to_image(self, x, y):
         return Vector(x, y).sub(self.zoom_center[self.mode]).mul(1.0/self.zoom[self.mode]).add(self.zoom_center[self.mode])
     
+<<<<<<< Updated upstream
     def on_closing():
         GUI.current.backend.save()
         GUI.current.root.destroy()
@@ -246,4 +247,21 @@ class GUI:
     def run(self):
         self.redraw()
         self.root.mainloop()
+=======
+    def run(self):
+        root = tkinter.Tk();
+        root.geometry = ("1024x640")
+        canvas = tkinter.Canvas(root, width = 1024, height = 640)
+        canvas.pack()
+        
+        #Load First image automatically
+        path = "image1.jpg"
+        img = Image.open(path)
+        tk_img = ImageTk.PhotoImage(img)
+        canvas.create_image(512, 320, image=tk_img)
+        #Add hotkeys for labelling, undoing, next and previous
+        #Re-render after all commands
+        root.mainloop()
+        pass
+>>>>>>> Stashed changes
         
