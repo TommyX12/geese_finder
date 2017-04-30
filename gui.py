@@ -1,10 +1,13 @@
 from backend import *
 import tkinter
-from PIL import ImageTk, Image
+from PIL import ImageTk, Image, ImageDraw
 from tkinter import PhotoImage
 import math
 
 ZOOM_MAX = 10.0
+NEST_IMAGES_PATH = 'output/nests/'
+NEST_IMAGES_NAME = 'nest{}.png'
+BOUND_EXPANSION = 0.05
 
 class GUI:
     current = None
@@ -76,6 +79,7 @@ class GUI:
     
     def on_closing():
         GUI.current.backend.save()
+        GUI.current.save_nest_images()
         GUI.current.root.destroy()
     
     def on_key_down(event):
@@ -239,7 +243,7 @@ class GUI:
         ]
         return ' | '.join([str(i) for i in texts])
     
-    def redraw(self, text_only=False):
+    def redraw(self, text_only=False, override_text=None):
         if not text_only:
             self.canvas.delete("all")
             path = self.get_current_image().path
@@ -258,7 +262,7 @@ class GUI:
             self.canvas.delete(self.text)
 
         self.canvas.create_rectangle(0, 0, self.width, 25, fill='black')
-        self.text = self.canvas.create_text(0, 0, fill='white', font='Arial 14', text=self.get_text(), anchor='nw')
+        self.text = self.canvas.create_text(0, 0, fill='white', font='Arial 14', text=(override_text if override_text != None else self.get_text()), anchor='nw')
     
     def draw_goose(self, x, y, type, use_gps=False):
         if use_gps:
@@ -277,3 +281,54 @@ class GUI:
     def run(self):
         self.redraw()
         self.root.mainloop()
+
+    def save_nest_images(self):
+        # self.redraw(True, 'Saving nest images..')
+        print('Saving nest images..')
+
+        if not os.path.exists(NEST_IMAGES_PATH):
+            os.mkdir(NEST_IMAGES_PATH)
+
+        for image_object in self.image_objects:
+            nests = []
+            for goose in image_object.get_geese():
+                if goose.type == 'nest':
+                    nests.append(goose)
+
+            if len(nests) > 0:
+                min_x = 1.0
+                min_y = 1.0
+                max_x = 0.0
+                max_y = 0.0
+
+                avg_lat = 0.0
+                avg_lon = 0.0
+
+                for nest in nests:
+                    min_x = min(min_x, nest.x)
+                    min_y = min(min_y, nest.y)
+                    max_x = max(max_x, nest.x)
+                    max_y = max(max_y, nest.y)
+
+                    avg_lat += nest.lat
+                    avg_lon += nest.lon
+
+                avg_lat /= len(nests)
+                avg_lon /= len(nests)
+
+                min_x -= BOUND_EXPANSION
+                min_y -= BOUND_EXPANSION
+                max_x += BOUND_EXPANSION
+                max_y += BOUND_EXPANSION
+
+                min_x = clamp(min_x, 0.0, 1.0)
+                min_y = clamp(min_y, 0.0, 1.0)
+                max_x = clamp(max_x, 0.0, 1.0)
+                max_y = clamp(max_y, 0.0, 1.0)
+
+                img = Image.open(image_object.path)
+                img = img.crop((int(min_x * img.width), int(min_y * img.height), int(max_x * img.width), int(max_y * img.height)))
+                draw = ImageDraw.Draw(img)
+                draw.text((0, 0), "{:.6f}, {:.6f}".format(avg_lat, avg_lon))
+                img.save(NEST_IMAGES_PATH + NEST_IMAGES_NAME.format(str(image_object.id)))
+
