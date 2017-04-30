@@ -160,7 +160,7 @@ class Backend:
         #  gps_data    = csv_to_dicts(read_file(GPS_DATA_FILENAME))
         geese_raw   = csv_to_dicts(read_file(GEESE_RAW_FILENAME))
         corners     = csv_to_dicts(read_file(CORNERS_FILENAME))
-        image_paths = list_dir('images/*.jpg')
+        image_paths = list_dir('images/*')
         
         geese_id = {}
         for goose_raw in geese_raw:
