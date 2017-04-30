@@ -177,7 +177,11 @@ class GUI:
         w = u.add(Vector(c, c))
         u = u.mul2(GUI.img_raw.width, GUI.img_raw.height)
         w = w.mul2(GUI.img_raw.width, GUI.img_raw.height)
-        GUI.img = ImageTk.PhotoImage(GUI.img_raw.crop((int(u.x), int(u.y), int(w.x), int(w.y))).resize((int(d.x), int(d.y))))
+        if dpi_scale == 1.0:
+            GUI.img = ImageTk.PhotoImage(GUI.img_raw.resize((int(d.x), int(d.y))))
+            
+        else:
+            GUI.img = ImageTk.PhotoImage(GUI.img_raw.crop((int(u.x), int(u.y), int(w.x), int(w.y))).resize((int(d.x), int(d.y))))
         #  GUI.img = PhotoImage(file=path)
     
     def get_current_image(self, force_non_map=False):
